@@ -1,0 +1,266 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        html {
+            background-color: #841617;
+        }
+        body {
+            background-color: white;
+            max-width: 60em;
+            margin: 1em auto;
+            border: 6px solid #FDF9D8;
+            border-radius: 2em;
+            padding: 1em;
+            text-align: center;
+        }
+        input, button {
+            font-size: 1.25em;
+            padding: 0.5em;
+            display: inline-block;
+            max-width: 100%;
+        }
+        input[type="file"] {
+            border: 0.125em solid #841617;
+            border-radius: 0.5em;
+        }
+        #downloadLink {
+            display: inline-block;
+            padding: 0.5em 1em;
+            background-color: #660000;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #c {
+            max-width: 100%;
+        }
+        .noMargin {
+            margin: 0;
+        }
+        .small {
+            font-size: small;
+        }
+    </style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Banner Maker</title>
+</head>
+
+<body>
+    <h1 class="noMargin">Banner Maker</h1>
+    
+    <br>
+    <hr>   
+    <div id="box1" style="">
+        <h2>Step 1: Choose Program</h2>
+            <form id= "programs"> 
+                <input type="radio" id= "LSAL" name="programs" value="LSAL" checked> LSAL &nbsp;         
+                <input type="radio" id= "LSCJ" name="programs" value="LSCJ"> LSCJ &nbsp;
+                <input type="radio" id= "LSCS" name="programs" value="LSCS"> LSCS &nbsp;
+                <input type="radio" id= "LSHA" name="programs" value="LSHA"> LSHA &nbsp;<br/>
+                <input type="radio" id= "LSLC" name="programs" value="LSLC" > LSLC &nbsp;
+                <input type="radio" id= "LSMS" name="programs" value="LSMS"> LSMS &nbsp;
+                <input type="radio" id= "LSPS" name="programs" value="LSPS"> LSPS &nbsp;
+                <input type="radio" id= "LSTD" name="programs" value="LSTD"> LSTD &nbsp;
+            </form>
+          <br>  
+            <h2>Step 2: Course Information</h2>
+        <input type="checkbox" id= "Welcome" name="Welcome" value="Welcome to " >   Click to add Welcome Message <br/><br/>
+        <input id="courseNumber" placeholder="Enter Course #" autocomplete="off"><br/><br/>
+        <input id="courseName" placeholder="And Course Name" autocomplete="off">
+        <br><br>
+   
+              
+   
+    
+    <div id="box2" style="">
+         <h2>Step 3: Upload Image:</h2>
+        <input id="ifile" type="file" autocomplete="off">
+    </div>
+    <div id="boxC" style="">
+        <canvas id="c" width= "936" height= "216" ></canvas>
+        <br>
+    </div>
+        <br><br><br>
+        <a class="buttonLink" id="downloadLink">Step 4: Download Banner!</a>
+        <br><br><br>
+        <a href="">Make Another Banner?</a>
+    </div>
+    <br><br>
+
+    
+    <script>
+(function (document, FileReader, Image) {
+    "use strict";
+    var e = {}, // A container for DOM elements
+        reader = new FileReader(),
+        image = new Image(),
+        ctxt = null, // For canvas' 2d context
+        writeMeme = null, // For writing text on canvas
+        renderMeme = null, // For rendering meme on canvas
+        get = function (id) {
+            // Short for document.getElementById()
+            return document.getElementById(id);
+        };
+    // Get elements (by id):
+    e.box2 = get("box2");
+    e.ifile = get("ifile");
+    e.box3 = get("box3");
+    e.programs = get("programs");
+    e.units = get("units");
+    e.c = get("c"); // canvas;
+    e.downloadLink = get("downloadLink");
+    var theColor, theProgram, theText, theCourse, courseName;
+    var welcome = "";
+
+    // Get canvas context:
+    ctxt = e.c.getContext("2d");
+    // Function to write text onto canvas:
+    writeMeme = function (text, x, y) {
+        var f = null; // Font size (in pt)
+        for (f = 40; f >= 0; f -= 1) {
+            ctxt.font = "bold " + f + "pt Impact, Charcoal, sans-serif";
+            if (ctxt.measureText(text).width < e.c.width - 10) {
+                ctxt.fillText(text, x, y);
+                ctxt.strokeText(text, x, y);
+                break;
+            }
+        }
+    };
+    
+    
+    // Function for rendering memes:
+    renderMeme = function () {
+        var theText;
+        //draw image
+        //ctxt.drawImage(image, 0, 0, e.c.width, e.c.height); 
+             
+        ctxt.drawImage(image, 0, 0, 936, 216, 0, 0, 936, 216);
+        
+        //convert to greyscale
+        var imageData = ctxt.getImageData(0, 0, 936, 216);
+        var data = imageData.data;
+
+        for(var i = 0; i < data.length; i += 4) {
+          var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+          // red
+          data[i] = brightness;
+          // green
+          data[i + 1] = brightness;
+          // blue
+          data[i + 2] = brightness;
+        }
+
+        // overwrite original image with greyscale version
+        ctxt.putImageData(imageData, 0, 0);
+        //overlay
+        ctxt.fillStyle= "black";
+        ctxt.globalAlpha = 0.25;
+        ctxt.fillRect(0,0,936,216);
+        //write text
+        theText = setText();
+        ctxt.globalAlpha = 1;
+        ctxt.fillStyle= "white";
+        writeMeme(theText, 936/2, 75);
+        writeMeme(courseName, 936/2, 130);
+        // left bar
+        ctxt.fillStyle= setColor();
+        ctxt.fillRect(100, 145, 736, 2);
+      };
+      
+        var imageObj = new Image();
+        imageObj.onload = function() {
+        drawImage(this);      
+    };
+    
+    //sets values for color course number and program
+    function setColor() {
+        theCourse = document.getElementById("courseNumber").value;
+        if (document.getElementById("Welcome").checked){
+            welcome = document.getElementById("Welcome").value;            
+        }
+        
+        if (document.getElementById("LSAL").checked){
+            theProgram = document.getElementById("LSAL").value;
+            return "#7E1413";
+        }
+
+        if (document.getElementById("LSCJ").checked){
+            theProgram = document.getElementById("LSCJ").value;
+            return "#032A5E";
+        }
+
+        if (document.getElementById("LSCS").checked){
+            theProgram = document.getElementById("LSCS").value;
+            return "#1F4C25";
+        }
+        if (document.getElementById("LSHA").checked){
+            theProgram = document.getElementById("LSHA").value;
+            return "#3D392D";
+        }
+        if (document.getElementById("LSLC").checked){
+            theProgram = document.getElementById("LSLC").value;
+            return "#D38516";
+        }
+        if (document.getElementById("LSMS").checked){
+            theProgram = document.getElementById("LSMS").value;
+            return "#255F8B";
+        }
+        if (document.getElementById("LSPS").checked){
+            theProgram = document.getElementById("LSPS").value;
+            return "#41033C";
+        }
+        if (document.getElementById("LSTD").checked){
+            theProgram = document.getElementById("LSTD").value;
+            return "#cbc4a4";
+        }
+        return "#841617";
+    };
+    
+    function setText(){
+        theCourse = document.getElementById("courseNumber").value;
+        courseName = document.getElementById("courseName").value;
+        setColor();
+        return welcome  + theProgram + " " + theCourse;
+                 
+    };
+     
+    
+    // Event handlers:
+    e.ifile.onchange = function () {
+        reader.readAsDataURL(e.ifile.files[0]);
+        reader.onload = function () {
+            image.src = reader.result;
+            image.onload = function () {
+                // Canvas settings:
+
+                ctxt.textAlign = "center";
+                ctxt.fillStyle = "white";
+                ctxt.strokeStyle = "black";
+                ctxt.lineWidth = 2;
+                renderMeme();
+                e.box2.style.display = "none";
+                e.box3.style.display = "";
+            };
+        };
+    };
+    
+    
+    e.downloadLink.onclick = function () {
+        
+        e.downloadLink.href = e.c.toDataURL();
+        e.downloadLink.download = welcome + theProgram + " " + theCourse + ".png";      
+
+    };
+}(this.document, this.FileReader, this.Image));
+    </script>
+    
+</body>
+
+
+</html>
+
