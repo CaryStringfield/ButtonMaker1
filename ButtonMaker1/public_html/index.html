@@ -1,0 +1,337 @@
+<!doctype html>
+<html>
+
+<head>
+    <style>
+        html {
+            background-color: #841617;
+        }
+        body {
+            background-color: white;
+            max-width: 60em;
+            margin: 1em auto;
+            border: 6px solid #FDF9D8;
+            border-radius: 2em;
+            padding: 1em;
+            text-align: center;
+        }
+        input, button {
+            font-size: 1.25em;
+            padding: 0.5em;
+            display: inline-block;
+            max-width: 100%;
+        }
+        input[type="file"] {
+            border: 0.125em solid #841617;
+            border-radius: 0.5em;
+        }
+        #downloadLink {
+            display: inline-block;
+            padding: 0.5em 1em;
+            background-color: #660000;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            cursor: pointer;
+        }
+
+        #c {
+            max-width: 100%;
+        }
+        .noMargin {
+            margin: 0;
+        }
+        .small {
+            font-size: small;
+        }
+    </style>
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Button Maker</title>
+</head>
+
+<body>
+    <h1 class="noMargin">Button Maker</h1>
+    
+    <br>
+    <hr>   
+    <div id="box1" style="">
+        <h2>Step 1: Choose Program</h2>
+            <form id= "programs"> 
+                <input type="radio" id= "LSALG" name="programs" value="LSAL Graduate" checked> LSAL Graduate &nbsp;         
+                <input type="radio" id= "LSALU" name="programs" value="LSAL Undergraduate"> LSAL Undergraduate &nbsp; 
+                <input type="radio" id= "LSCJG" name="programs" value="LSCJ Graduate"> LSCJ Graduate &nbsp;
+                <input type="radio" id= "LSCJU" name="programs" value="LSCJ Undergraduate" > LSCJ Undergraduate &nbsp;
+                <input type="radio" id= "LSCSU" name="programs" value="LSCS Undergraduate"> LSCS Undergraduate &nbsp;<br/>
+                <input type="radio" id= "LSHAG" name="programs" value="LSHA Graduate"> LSHA Graduate &nbsp;
+                <input type="radio" id= "LSLCU" name="programs" value="LSLC Undergraduate" > LSLC Undergraduate &nbsp;
+                <input type="radio" id= "LSMSG" name="programs" value="LSMS Graduate"> LSMS Graduate &nbsp;
+                <input type="radio" id= "LSPSG" name="programs" value="LSPS Graduate"> LSPS Graduate &nbsp;
+                <input type="radio" id= "LSTDU" name="programs" value="LSTD Undergraduate"> LSTD undergraduate &nbsp;
+            </form>
+          <br>  
+        <input id="courseNumber" placeholder="And Enter Course #" autocomplete="off">
+        <br><br>
+   
+    <div id="box3" style="">
+        <h2>Step 2: Choose Text:</h2>
+         <form id= "units">
+                <input type="radio" id= "start"  name="units" value="Start Here" > Start Here &nbsp;   
+                <input type="radio" id= "intro"  name="units" value="Introduction"> Introduction &nbsp;         
+                <input type="radio" id= "1"  name="units" value="Unit 1"> Unit 1 &nbsp; 
+                <input type="radio" id= "2"  name="units" value="Unit 2">  Unit 2 &nbsp;
+                <input type="radio" id= "3"  name="units" value="Unit 3" > Unit 3 &nbsp;
+                <input type="radio" id= "4"  name="units" value="Unit 4"> Unit 4 &nbsp;
+                <input type="radio" id= "5"  name="units" value="Unit 5"> Unit 5 &nbsp;<br/>
+                <input type="radio" id= "6"  name="units" value="Unit 6" > Unit 6 &nbsp;
+                <input type="radio" id= "7"  name="units" value="Unit 7"> Unit 7 &nbsp;
+                <input type="radio" id= "8"  name="units" value="Unit 8"> Unit 8 &nbsp;
+                <input type="radio" id= "clb"  name="units" value="Community Learning Board"> Community Learning Board &nbsp;
+                <input type="radio" id= "finalP"  name="units" value="Final Project"> Final Project &nbsp;
+
+            </form>
+        <br/>
+         <input id="cusText" placeholder="Or Enter Custom Text" autocomplete="off">
+        <br><br>
+        <h2>Step 3: Upload Image:</h2>
+    </div>               
+   
+    
+    <div id="box2" style="">
+        <input id="ifile" type="file" autocomplete="off">
+    </div>
+    <div id="boxC" style="">
+        <canvas id="c" width="216" height="108"></canvas>
+        <br>
+    </div>
+
+        <br><br><br>
+        <a class="buttonLink" id="downloadLink">Step 4: Download Button!</a>
+        <br><br><br>
+        <a href="">Make Another Button?</a>
+    </div>
+    <br><br>
+
+    
+    <script>
+(function (document, FileReader, Image) {
+    "use strict";
+    var e = {}, // A container for DOM elements
+        reader = new FileReader(),
+        image = new Image(),
+        ctxt = null, // For canvas' 2d context
+        writeMeme = null, // For writing text on canvas
+        renderMeme = null, // For rendering meme on canvas
+        get = function (id) {
+            // Short for document.getElementById()
+            return document.getElementById(id);
+        };
+    // Get elements (by id):
+    e.box2 = get("box2");
+    e.ifile = get("ifile");
+    e.box3 = get("box3");
+    e.programs = get("programs");
+    e.units = get("units");
+    e.c = get("c"); // canvas;
+    e.downloadLink = get("downloadLink");
+    var theColor, theProgram, theText, theCourse;
+
+    
+    // Get canvas context:
+    ctxt = e.c.getContext("2d");
+    // Function to write text onto canvas:
+    writeMeme = function (text, x, y) {
+        var f = null; // Font size (in pt)
+        for (f = 20; f >= 0; f -= 1) {
+            ctxt.font = "bold " + f + "pt Impact, Charcoal, sans-serif";
+            if (ctxt.measureText(text).width < e.c.width - 10) {
+                ctxt.fillText(text, x, y);
+                ctxt.strokeText(text, x, y);
+                break;
+            }
+        }
+    };
+    
+    
+    // Function for rendering memes:
+    renderMeme = function () {
+        var theText;
+        //draw image
+        ctxt.drawImage(image, 0, 0,e.c.width, e.c.height); 
+        //convert to greyscale
+        var imageData = ctxt.getImageData(0, 0, image.width, image.height);
+        var data = imageData.data;
+
+        for(var i = 0; i < data.length; i += 4) {
+          var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+          // red
+          data[i] = brightness;
+          // green
+          data[i + 1] = brightness;
+          // blue
+          data[i + 2] = brightness;
+        }
+
+        // overwrite original image with greyscale version
+        ctxt.putImageData(imageData, 0, 0);
+        //overlay
+        ctxt.fillStyle= "black";
+        ctxt.globalAlpha = 0.25;
+        ctxt.fillRect(0,0,216,108);
+        //write text
+        theText = setText();
+        ctxt.globalAlpha = 1;
+        ctxt.fillStyle= "white";
+        if (document.getElementById("clb").checked){
+            var splitText = theText.split(" ");
+            writeMeme(splitText[0], 13, 30);
+            writeMeme(splitText[1], 13, 57);
+            writeMeme(splitText[2], 13, 84);            
+        }
+        else
+            writeMeme(theText, 13, 30);
+        // left bar
+        ctxt.fillStyle= setColor();
+        ctxt.fillRect(0, 0, 5, 108);
+          
+        
+      };
+      
+        var imageObj = new Image();
+        imageObj.onload = function() {
+        drawImage(this);      
+    };
+    
+    function setColor() {
+        theCourse = document.getElementById("courseNumber").value;
+        if (document.getElementById("LSALG").checked){
+            theProgram = document.getElementById("LSALG").value;
+            return "#7E1413";
+        }
+        if (document.getElementById("LSALU").checked){
+            theProgram = document.getElementById("LSALU").value;
+            return "#841617";
+        }
+        if (document.getElementById("LSCJG").checked){
+            theProgram = document.getElementById("LSCJG").value;
+            return "#032A5E";
+        }
+        if (document.getElementById("LSCJU").checked){
+            theProgram = document.getElementById("LSCJU").value;
+            return "#032A5E";
+        }
+        if (document.getElementById("LSCSU").checked){
+            theProgram = document.getElementById("LSCSU").value;
+            return "#1F4C25";
+        }
+        if (document.getElementById("LSHAG").checked){
+            theProgram = document.getElementById("LSHAG").value;
+            return "#3D392D";
+        }
+        if (document.getElementById("LSLCU").checked){
+            theProgram = document.getElementById("LSLCU").value;
+            return "#D38516";
+        }
+        if (document.getElementById("LSMSG").checked){
+            theProgram = document.getElementById("LSMSG").value;
+            return "#255F8B";
+        }
+        if (document.getElementById("LSPSG").checked){
+            theProgram = document.getElementById("LSPSG").value;
+            return "#41033C";
+        }
+        if (document.getElementById("LSTDU").checked){
+            theProgram = document.getElementById("LSTDU").value;
+            return "#cbc4a4";
+        }
+        return "#841617";
+    };
+    
+    function setText(){
+        if (document.getElementById("start").checked){
+            theText = document.getElementById("start").value;
+            return theText;
+        }
+        if (document.getElementById("intro").checked){
+            theText = document.getElementById("intro").value;
+            return theText;
+        }
+        if (document.getElementById("1").checked){
+            theText = document.getElementById("1").value;
+            return theText;
+        }
+        if (document.getElementById("2").checked){
+            theText = document.getElementById("2").value;
+            return theText;
+        }
+        if (document.getElementById("3").checked){
+            theText = document.getElementById("3").value;
+            return theText;
+        }
+        if (document.getElementById("4").checked){
+            theText = document.getElementById("4").value;
+            return theText;
+        }
+        if (document.getElementById("5").checked){
+            theText = document.getElementById("5").value;
+            return theText;
+        }
+        if (document.getElementById("6").checked){
+            theText = document.getElementById("6").value;
+            return theText;
+        }
+        if (document.getElementById("7").checked){
+            theText = document.getElementById("7").value;
+            return theText;
+        }
+        if (document.getElementById("8").checked){
+            theText = document.getElementById("8").value;
+            return theText;
+        }
+        if (document.getElementById("clb").checked){
+            theText = document.getElementById("clb").value;
+            return theText;
+        }
+        if (document.getElementById("finalP").checked){
+            theText = document.getElementById("finalP").value;
+            return theText;
+        }
+ 
+        theText = document.getElementById("cusText").value;
+        return document.getElementById("cusText").value;
+          
+    };
+     
+    
+    // Event handlers:
+    e.ifile.onchange = function () {
+        reader.readAsDataURL(e.ifile.files[0]);
+        reader.onload = function () {
+            image.src = reader.result;
+            image.onload = function () {
+                // Canvas settings:
+
+                ctxt.textAlign = "left";
+                ctxt.fillStyle = "white";
+                ctxt.strokeStyle = "black";
+                ctxt.lineWidth = 2;
+                renderMeme();
+                e.box2.style.display = "none";
+                e.box3.style.display = "";
+            };
+        };
+    };
+    
+    
+    e.downloadLink.onclick = function () {
+        e.downloadLink.href = e.c.toDataURL();
+        e.downloadLink.download = theProgram + " " + theCourse + " " + theText + ".png";
+    };
+}(this.document, this.FileReader, this.Image));
+    </script>
+    
+</body>
+
+
+</html>
+
