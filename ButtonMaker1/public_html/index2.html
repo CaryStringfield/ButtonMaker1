@@ -61,14 +61,18 @@
     <div id="box1" style="">
         <h2>Step 1: Choose Program</h2>
             <form id= "programs"> 
-                <input type="radio" id= "LSAL" name="programs" value="LSAL" checked> LSAL &nbsp;         
+                <input type="radio" id= "LAW" name="programs" value="LAW"> LAW &nbsp;
+                <input type="radio" id= "LSAL" name="programs" value="LSAL"> LSAL &nbsp;         
                 <input type="radio" id= "LSCJ" name="programs" value="LSCJ"> LSCJ &nbsp;
                 <input type="radio" id= "LSCS" name="programs" value="LSCS"> LSCS &nbsp;
-                <input type="radio" id= "LSHA" name="programs" value="LSHA"> LSHA &nbsp;<br/>
+                <input type="radio" id= "LSHA" name="programs" value="LSHA"> LSHA &nbsp;
+                <input type="radio" id= "LSIS" name="programs" value="LSIS"> LSIS &nbsp;<br/>
                 <input type="radio" id= "LSLC" name="programs" value="LSLC" > LSLC &nbsp;
                 <input type="radio" id= "LSMS" name="programs" value="LSMS"> LSMS &nbsp;
                 <input type="radio" id= "LSPS" name="programs" value="LSPS"> LSPS &nbsp;
+                 <input type="radio" id= "LSRL" name="programs" value="LSRL"> LSRL &nbsp;
                 <input type="radio" id= "LSTD" name="programs" value="LSTD"> LSTD &nbsp;
+                <input type="radio" id= "NONE" name="programs" value="" checked> NONE &nbsp;
             </form>
           <br>  
             <h2>Step 2: Course Information</h2>
@@ -82,6 +86,7 @@
     
     <div id="box2" style="">
          <h2>Step 3: Upload Image:</h2>
+         <input type="checkbox" id= "Greyscale" name="Greyscale" value="1" >   Make image greyscale <br/><br/>
         <input id="ifile" type="file" autocomplete="off">
     </div>
     <div id="boxC" style="">
@@ -117,7 +122,7 @@
     e.units = get("units");
     e.c = get("c"); // canvas;
     e.downloadLink = get("downloadLink");
-    var theColor, theProgram, theText, theCourse, courseName;
+    var theColor, theProgram, theText, theCourse, courseName, greyscale;
     var welcome = "";
 
     // Get canvas context:
@@ -126,7 +131,7 @@
     writeMeme = function (text, x, y) {
         var f = null; // Font size (in pt)
         for (f = 40; f >= 0; f -= 1) {
-            ctxt.font = "bold " + f + "pt Impact, Charcoal, sans-serif";
+            ctxt.font = "bold " + f + "pt Arial Black, Charcoal, sans-serif";
             if (ctxt.measureText(text).width < e.c.width - 10) {
                 ctxt.fillText(text, x, y);
                 ctxt.strokeText(text, x, y);
@@ -149,25 +154,29 @@
         ctxt.drawImage(image, imageWidth - 468,  imageHeight - 108, 936, 216, 0, 0, 936, 216);
         
         //convert to greyscale
-        var imageData = ctxt.getImageData(0, 0, 936, 216);
-        var data = imageData.data;
+        if (document.getElementById("Greyscale").checked){
+            var imageData = ctxt.getImageData(0, 0, 936, 216);
+            var data = imageData.data;
        
-        for(var i = 0; i < data.length; i += 4) {
-          var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-          // red
-          data[i] = brightness;
-          // green
-          data[i + 1] = brightness;
-          // blue
-          data[i + 2] = brightness;
-        }
+            for(var i = 0; i < data.length; i += 4) {
+                var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                // red
+                data[i] = brightness;
+                // green
+                data[i + 1] = brightness;
+                // blue
+                data[i + 2] = brightness;
+            }
 
         // overwrite original image with greyscale version
-        ctxt.putImageData(imageData, 0, 0);
-        //overlay
-        ctxt.fillStyle= "black";
-        ctxt.globalAlpha = 0.25;
-        ctxt.fillRect(0,0,936,216);
+        
+        
+            ctxt.putImageData(imageData, 0, 0);
+            //overlay
+            ctxt.fillStyle= "black";
+            ctxt.globalAlpha = 0.25;
+            ctxt.fillRect(0,0,936,216);
+        }
         //write text
         theText = setText();
         ctxt.globalAlpha = 1;
@@ -195,6 +204,10 @@
             theProgram = document.getElementById("LSAL").value;
             return "#7E1413";
         }
+        if (document.getElementById("LAW").checked){
+            theProgram = document.getElementById("LAW").value;
+            return "#7E1413";
+        }
 
         if (document.getElementById("LSCJ").checked){
             theProgram = document.getElementById("LSCJ").value;
@@ -209,6 +222,10 @@
             theProgram = document.getElementById("LSHA").value;
             return "#3D392D";
         }
+        if (document.getElementById("LSIS").checked){
+            theProgram = document.getElementById("LSIS").value;
+           // return "#3D392D";   
+        }
         if (document.getElementById("LSLC").checked){
             theProgram = document.getElementById("LSLC").value;
             return "#D38516";
@@ -221,10 +238,18 @@
             theProgram = document.getElementById("LSPS").value;
             return "#41033C";
         }
+        if (document.getElementById("LSRL").checked){
+            theProgram = document.getElementById("LSRL").value;
+           // return "#cbc4a4";
+        }
         if (document.getElementById("LSTD").checked){
             theProgram = document.getElementById("LSTD").value;
             return "#cbc4a4";
         }
+        if (document.getElementById("NONE").checked){
+            theProgram = document.getElementById("NONE").value;
+           // return "#cbc4a4";
+        }        
         return "#841617";
     };
     
