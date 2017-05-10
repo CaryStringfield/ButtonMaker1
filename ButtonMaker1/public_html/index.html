@@ -58,19 +58,23 @@
     <div id="box1" style="">
         <h2>Step 1: Choose Program</h2>
             <form id= "programs"> 
-                <input type="radio" id= "LSALG" name="programs" value="LSAL Graduate" checked> LSAL Graduate &nbsp;         
+                <input type="radio" id= "LSALG" name="programs" value="LSAL Graduate" > LSAL Graduate &nbsp;         
                 <input type="radio" id= "LSALU" name="programs" value="LSAL Undergraduate"> LSAL Undergraduate &nbsp; 
                 <input type="radio" id= "LSCJG" name="programs" value="LSCJ Graduate"> LSCJ Graduate &nbsp;
                 <input type="radio" id= "LSCJU" name="programs" value="LSCJ Undergraduate" > LSCJ Undergraduate &nbsp;
                 <input type="radio" id= "LSCSU" name="programs" value="LSCS Undergraduate"> LSCS Undergraduate &nbsp;<br/>
                 <input type="radio" id= "LSHAG" name="programs" value="LSHA Graduate"> LSHA Graduate &nbsp;
+                <input type="radio" id= "LSISG" name="programs" value="LSIS Graduate"> LSIS Graduate &nbsp;
+                <input type="radio" id= "LSISU" name="programs" value="LSIS Undergraduate"> LSIS Undergraduate &nbsp;
                 <input type="radio" id= "LSLCU" name="programs" value="LSLC Undergraduate" > LSLC Undergraduate &nbsp;
-                <input type="radio" id= "LSMSG" name="programs" value="LSMS Graduate"> LSMS Graduate &nbsp;
+                <input type="radio" id= "LSMSG" name="programs" value="LSMS Graduate"> LSMS Graduate &nbsp;<br/>
                 <input type="radio" id= "LSPSG" name="programs" value="LSPS Graduate"> LSPS Graduate &nbsp;
-                <input type="radio" id= "LSTDU" name="programs" value="LSTD Undergraduate"> LSTD undergraduate &nbsp;
+                <input type="radio" id= "LSRLG" name="programs" value="LSRL Graduate"> LSRL Graduate &nbsp;
+                <input type="radio" id= "LSRLU" name="programs" value="LSRL Undergraduate"> LSRL Undergraduate &nbsp;
+                <input type="radio" id= "LSTDU" name="programs" value="LSTD Undergraduate"> LSTD Undergraduate &nbsp;
+                <input type="radio" id= "NONE" name="programs" value="NONE" checked> NONE &nbsp;
             </form>
-          <br>  
-        <input id="courseNumber" placeholder="And Enter Course #" autocomplete="off">
+
         <br><br>
    
     <div id="box3" style="">
@@ -98,6 +102,7 @@
    
     
     <div id="box2" style="">
+        <input type="checkbox" id= "Greyscale" name="Greyscale" value="1" >   Make image greyscale <br/><br/>
         <input id="ifile" type="file" autocomplete="off">
     </div>
     <div id="boxC" style="">
@@ -143,7 +148,7 @@
     writeMeme = function (text, x, y) {
         var f = null; // Font size (in pt)
         for (f = 20; f >= 0; f -= 1) {
-            ctxt.font = "bold " + f + "pt Impact, Charcoal, sans-serif";
+            ctxt.font = "bold " + f + "pt Arial Black, Charcoal, sans-serif";
             if (ctxt.measureText(text).width < e.c.width - 10) {
                 ctxt.fillText(text, x, y);
                 ctxt.strokeText(text, x, y);
@@ -159,25 +164,27 @@
         //draw image
         ctxt.drawImage(image, 0, 0,e.c.width, e.c.height); 
         //convert to greyscale
-        var imageData = ctxt.getImageData(0, 0, image.width, image.height);
-        var data = imageData.data;
+        if (document.getElementById("Greyscale").checked){
+            var imageData = ctxt.getImageData(0, 0, image.width, image.height);
+            var data = imageData.data;
 
-        for(var i = 0; i < data.length; i += 4) {
-          var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
-          // red
-          data[i] = brightness;
-          // green
-          data[i + 1] = brightness;
-          // blue
-          data[i + 2] = brightness;
+            for(var i = 0; i < data.length; i += 4) {
+                var brightness = 0.34 * data[i] + 0.5 * data[i + 1] + 0.16 * data[i + 2];
+                // red
+                data[i] = brightness;
+                // green
+                data[i + 1] = brightness;
+                // blue
+                data[i + 2] = brightness;
+            }
+
+            // overwrite original image with greyscale version
+            ctxt.putImageData(imageData, 0, 0);
+            //overlay
+            ctxt.fillStyle= "black";
+            ctxt.globalAlpha = 0.25;
+            ctxt.fillRect(0,0,216,108);
         }
-
-        // overwrite original image with greyscale version
-        ctxt.putImageData(imageData, 0, 0);
-        //overlay
-        ctxt.fillStyle= "black";
-        ctxt.globalAlpha = 0.25;
-        ctxt.fillRect(0,0,216,108);
         //write text
         theText = setText();
         ctxt.globalAlpha = 1;
@@ -203,7 +210,7 @@
     };
     
     function setColor() {
-        theCourse = document.getElementById("courseNumber").value;
+        
         if (document.getElementById("LSALG").checked){
             theProgram = document.getElementById("LSALG").value;
             return "#7E1413";
@@ -228,6 +235,14 @@
             theProgram = document.getElementById("LSHAG").value;
             return "#3D392D";
         }
+        if (document.getElementById("LSISG").checked){
+            theProgram = document.getElementById("LSISG").value;
+            //return "#3D392D";
+        }
+        if (document.getElementById("LSISU").checked){
+            theProgram = document.getElementById("LSISU").value;
+            //return "#3D392D";
+        }
         if (document.getElementById("LSLCU").checked){
             theProgram = document.getElementById("LSLCU").value;
             return "#D38516";
@@ -240,9 +255,21 @@
             theProgram = document.getElementById("LSPSG").value;
             return "#41033C";
         }
+        if (document.getElementById("LSRLG").checked){
+            theProgram = document.getElementById("LSISG").value;
+            //return "#3D392D";
+        }
+        if (document.getElementById("LSRLU").checked){
+            theProgram = document.getElementById("LSRLU").value;
+            //return "#3D392D";
+        }
         if (document.getElementById("LSTDU").checked){
             theProgram = document.getElementById("LSTDU").value;
             return "#cbc4a4";
+        }
+        if (document.getElementById("NONE").checked){
+            theProgram = document.getElementById("NONE").value;
+            //return "#3D392D";
         }
         return "#841617";
     };
